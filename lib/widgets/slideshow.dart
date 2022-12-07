@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,12 +14,17 @@ class SlideShow extends StatelessWidget {
   final bool puntosArriba;
   final Color colorPrimario;
   final Color colorSecundario;
+  final double  bulletPrimario;
+  final double  bulletSecundario;
 
   SlideShow({
-   required this.slides,
-   this.puntosArriba = false,
-   required this.colorPrimario,
-   required this.colorSecundario
+
+    required this.slides,
+    this.puntosArriba      = false,
+    this.colorPrimario     = Colors.blue,
+    this.colorSecundario   = Colors.grey, 
+    this.bulletPrimario    = 12.0,
+    this.bulletSecundario  = 12.0 
   });
 
 
@@ -32,9 +39,14 @@ class SlideShow extends StatelessWidget {
           builder: (BuildContext context) {
 
               WidgetsBinding.instance.addPostFrameCallback(( _ ) {
-                
-                  Provider.of<_SlideShowModel>(context,listen: false).colorPrimario = this.colorPrimario;
-                  Provider.of<_SlideShowModel>(context,listen: false).colorPrimario = this.colorSecundario;
+
+
+                  Provider.of<_SlideShowModel>(context,listen: false).colorPrimario = colorPrimario;
+                  Provider.of<_SlideShowModel>(context,listen: false).colorSecundario = colorSecundario;
+
+                  Provider.of<_SlideShowModel>(context,listen: false).bulletPrimario = bulletPrimario;
+                  Provider.of<_SlideShowModel>(context,listen: false).bulletSecundario = bulletSecundario;
+
               });
           
               return _CrearEstructuraSlideshow(puntosArriba: puntosArriba, slides: slides);
@@ -104,26 +116,36 @@ class _Dots extends StatelessWidget {
 class _Dot extends StatelessWidget {
 
    final int index;
-
-
    _Dot(this.index);
  
   @override
   Widget build(BuildContext context) {
 
     final ssModel = Provider.of<_SlideShowModel>(context);
+    double bulletSize = 0;
+    Color  color;
 
+    if(ssModel.currentPage >= index -0.5 && ssModel.currentPage < index + 0.5){
 
+        bulletSize = ssModel.bulletPrimario;
+        color = ssModel.colorPrimario;
+    }
+    else{
+
+        bulletSize = ssModel.bulletSecundario;
+        color = ssModel.colorSecundario;
+    }
+
+    
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      width: 12,
-      height: 12,
+ 
+      width:  bulletSize,
+      height: bulletSize,
       margin: const EdgeInsets.symmetric(horizontal: 7),
       decoration: BoxDecoration(
-      
-        color: (ssModel.currentPage >= index -0.5 && ssModel.currentPage < index + 0.5)
-                ? ssModel.colorPrimario : ssModel.colorSecundario,
+      color: color,
         shape: BoxShape.circle
       ), 
     );
@@ -198,9 +220,11 @@ class _Slide extends StatelessWidget {
 
 class _SlideShowModel with ChangeNotifier{
 
-  double _currentPage = 0;
-  Color  _colorPrimario = Colors.red;
-  Color  _colorSecundario = Colors.grey;
+  double _currentPage      = 0;
+  Color  _colorPrimario    = Colors.red;
+  Color  _colorSecundario  = Colors.grey;
+  double _bulletPrimario   = 12;
+  double _bulletSecundario = 12;
 
 
 
@@ -215,15 +239,24 @@ class _SlideShowModel with ChangeNotifier{
 
   Color get colorPrimario => _colorPrimario;
   set colorPrimario(Color color){
-   this._colorPrimario = color;
-   notifyListeners();
+   _colorPrimario = color;
+  
   }
-
   
   Color get colorSecundario => _colorSecundario;
   set colorSecundario(Color color){
-   this. _colorSecundario = color;
-   notifyListeners();
+   _colorSecundario = color;
+  }
+
+  double get bulletPrimario => _bulletPrimario;
+    set bulletPrimario(double bullet){
+    _bulletPrimario = bullet;
+  }
+
+   double get bulletSecundario => _bulletSecundario;
+    set bulletSecundario(double bullet){
+    _bulletSecundario = bullet;
+   
   }
 
 
